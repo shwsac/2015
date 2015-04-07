@@ -11,7 +11,8 @@ public class Seq {
     if(this == s) {
       return true;
     }
-    if((this.value == s.value)|| (this.next.equals(s.next))){
+    Seq sSeq = (Seq) s;
+    if((this.value == sSeq.value)|| (this.next.equals(sSeq.next))){
       return true;
     }else {
       return false;
