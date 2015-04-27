@@ -17,64 +17,84 @@ import java.util.PriorityQueue;
  *  k = 3
  *  iterator should return (if called 9 times): 1,1,2,2,3,4,5,7,8
  * */
-class Pair<E>{
+class Pair {
 	Integer index;
-	E val;
+	Integer val;
+
+	Pair(Integer i, Integer v) {
+		index = i;
+		val = v;
+	}
 }
 
-public class IteratorToKSortedLLs implements Iterable{
-	
-	public LinkedList[] lists;
-	public PriorityQueue<Pair<Integer>> minHeap = null;
-	
-	
-	
-	public boolean hasNext(){
-		if(minHeap == null){
-			initializeMinHeap(3);
-		}
-		return !minHeap.isEmpty();
-	}
-	
-	public Integer next(){
-		Pair res = minHeap.remove();
-		
-		return (Integer) res.val;
-	}
-	
-	public void remove(){
-		
-	}
-	
-	public void initializeMinHeap(int k){
-		minHeap = new PriorityQueue<Pair<Integer>>(k, new Comparator<Pair<Integer>>(){
-			@Override
-			public int compare(Pair one, Pair two){
-				return ((java.lang.Integer) one.val).compareTo((java.lang.Integer) two.val);
-			}
-		});
-	}
-	
-	
-	public static void main(String[] args){
-		int k =3;
-//		LinkedList<Integer>[] lists = new LinkedList<Integer>[k];
-//		lists[0].addAll(Arrays.asList(1,2,3));
-//		lists[1].addAll(Arrays.asList(1,4));
-//		lists[2].addAll(Arrays.asList(2,5,7,8));
-		
-		IteratorToKSortedLLs is = new IteratorToKSortedLLs();
-		//is.lists = lists;
-		
-		for(LinkedList i: is){
-			
-		}
-	}
+public class IteratorToKSortedLLs implements Iterable<Integer> {
+
+	public LinkedList<Integer>[] lists;
+	public PriorityQueue<Pair> minHeap = null;
+	public int[] indexArray = null;
 
 	@Override
-	public Iterator iterator() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterator<Integer> iterator() {
+		Iterator<Integer> it = new Iterator<Integer>() {
+			public boolean hasNext() {
+				if (minHeap == null) {
+					initializeMinHeap(3);
+				}
+				return !minHeap.isEmpty();
+			}
+
+			public Integer next() {
+				Pair res = minHeap.remove();
+				if (indexArray[res.index] < lists[res.index].size()) {
+
+					minHeap.add(new Pair(res.index, lists[res.index]
+							.get(indexArray[res.index])));
+					indexArray[res.index]++;
+				}
+				return (Integer) res.val;
+			}
+
+			public void remove() {
+			}
+
+			void initializeMinHeap(int k) {
+				indexArray = new int[lists.length];
+				minHeap = new PriorityQueue<Pair>(k, new Comparator<Pair>() {
+					@Override
+					public int compare(Pair one, Pair two) {
+						return Integer.compare(one.val, two.val);
+					}
+				});
+
+				for (int i = 0; i < lists.length; i++) {
+					minHeap.add(new Pair(i, (Integer) lists[i].get(0)));
+					indexArray[i] = 1;
+				}
+			}
+
+		};
+		return it;
+
+	}
+
+	public static void main(String[] args) {
+		int k = 3;
+		LinkedList<Integer>[] lists = new LinkedList[k];
+		for (int i = 0; i < k; i++) {
+			lists[i] = new LinkedList<Integer>();
+		}
+
+		lists[0].addAll(Arrays.asList(1, 2, 3));
+		lists[1].addAll(Arrays.asList(1, 4));
+		lists[2].addAll(Arrays.asList(2, 5, 7, 8));
+
+		IteratorToKSortedLLs is = new IteratorToKSortedLLs();
+		is.lists = lists;
+
+		Iterator it = is.iterator();
+		while (it.hasNext()) {
+			System.out.println((Integer) it.next());
+		}
 	}
 
 }
